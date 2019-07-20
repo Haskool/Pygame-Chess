@@ -20,14 +20,16 @@ class App:
         if event.type == pg.QUIT:
             self._running = False
         elif event.type == MOUSEBUTTONDOWN:
-            # set a piece to be dragged
+            # set a piece to be dragged using dragging field in View
             coordinates = pg.mouse.get_pos()
             mImage = self._view.setSelectedPiece(coordinates)
         elif event.type == MOUSEMOTION:
+            # perform a drag operation
             if self._view.dragging != None:
                 coordinates = pg.mouse.get_pos()
                 self._view.drag(coordinates)
         elif event.type == MOUSEBUTTONUP:
+            # reset dragging field in View
             if self._view.dragging != None:
                 self._view.dragging.release()
                 self._view.dragging = None
