@@ -1,12 +1,12 @@
+import pygame as pg
 from view import View
 from chess import Chess
-import pygame as pg
-from pygame.locals import *
 
-"""
-    App - main application
-"""
+
 class App:
+    """
+        App - main application
+    """
     def __init__(self):
         self._running = True
         self._display_surf = None
@@ -21,22 +21,22 @@ class App:
     def on_event(self, event):
         if event.type == pg.QUIT:
             self._running = False
-        elif event.type == MOUSEBUTTONDOWN:
+        elif event.type == pg.MOUSEBUTTONDOWN:
             # set a piece to be dragged using dragging field in View
             coordinates = pg.mouse.get_pos()
-            mImage = self._view.setSelectedPiece(coordinates)
-        elif event.type == MOUSEMOTION:
+            self._view.setSelectedPiece(coordinates)
+        elif event.type == pg.MOUSEMOTION:
             # perform a drag operation
             if self._view.dragging != None:
                 coordinates = pg.mouse.get_pos()
                 self._view.drag(coordinates)
-        elif event.type == MOUSEBUTTONUP:
+        elif event.type == pg.MOUSEBUTTONUP:
             # reset dragging field in View
             if self._view.dragging != None:
                 coordinates = pg.mouse.get_pos()
                 self._view.drop(coordinates)
                 self._view.dragging = None
-
+                
     def on_loop(self):
         pass
 
@@ -48,7 +48,7 @@ class App:
         pg.quit()
 
     def on_execute(self):
-        if self.on_init() == False:
+        if not self.on_init():
             self._running = False
 
         while self._running:
