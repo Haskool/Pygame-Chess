@@ -33,7 +33,8 @@ class App:
         elif event.type == MOUSEBUTTONUP:
             # reset dragging field in View
             if self._view.dragging != None:
-                self._view.dragging.release()
+                coordinates = pg.mouse.get_pos()
+                self._view.drop(coordinates)
                 self._view.dragging = None
 
     def on_loop(self):

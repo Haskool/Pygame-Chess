@@ -14,7 +14,7 @@ class mImage:
         self.dragged = False
 
     # checks if clicked and sets dragged field
-    def isClicked(self, coords):
+    def isDragged(self, coords):
         assert self.dragged == False
         x = coords[0]
         y = coords[1]
@@ -24,7 +24,7 @@ class mImage:
         return self.dragged
 
     # called once user releases mouse click and image was being dragged
-    def release(self):
+    def drop(self):
         assert self.dragged == True
         self.dragged = False
 

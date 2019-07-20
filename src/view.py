@@ -36,13 +36,12 @@ class View:
             for x in range(0, self.width, self.pwidth):
                 pI = pI = mImage("resources\\{}p.png".format(colour), (x, y), self.psize)
                 self.mImages.append(pI)
-
         self.refresh()
 
     # decides which piece was clicked (if any) and sets the dragging field to it
     def setSelectedPiece(self, mousePos):
         for image in self.mImages:
-            if image.isClicked(mousePos):
+            if image.isDragged(mousePos):
                 self.dragging = image
                 return
         self.dragging = None
@@ -55,9 +54,22 @@ class View:
         coords = tuple(map(lambda a , b : a - b/2, coords, self.dragging.size))
         self.dragging.move(coords)
         self.refresh()
+    
+    def drop(self, coords):
+        (x,y) = coords
+        x = (x//self.pwidth)*self.pwidth
+        y = (y//self.pheight)*self.pheight
+        self.dragging.move((x,y))
+        self.dragging.drop()
+        self.refresh()
 
     # re-blits every image to its last updated position
     def refresh(self):
         self._display_surf.blit(self.background, (0, 0))
         for movingI in self.mImages:
             self._display_surf.blit(movingI.image, movingI.pos)
+        
+        # Always draw the dragged piece over everything else
+        if self.dragging != None:
+            self._display_surf.blit(self.dragging.image, self.dragging.pos)
+        
