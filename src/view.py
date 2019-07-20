@@ -1,8 +1,9 @@
 import pygame as pg
 from mImage import mImage
 
-
-# View class the display surface presented to the app
+"""
+    View class - acts as front end for GUI and presents to app
+"""
 class View:
     def __init__(self):
         self._running = True

@@ -3,7 +3,9 @@ from chess import Chess
 import pygame as pg
 from pygame.locals import *
 
-
+"""
+    App - main application
+"""
 class App:
     def __init__(self):
         self._running = True
@@ -55,8 +57,6 @@ class App:
             self.on_render()
         self.on_cleanup()
 
-
-# so there needs to be "clicked" field for each image and then that allows event.pos to be centre of image then
 
 if __name__ == "__main__":
     theApp = App()
