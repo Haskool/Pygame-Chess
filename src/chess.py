@@ -1,9 +1,14 @@
+import numpy as np
+import pieces
+from pieces import Piece, Pawn, Rook, Knight, Bishop, Queen, King
 class Chess:
     """
-        sChess - models the systems of logic involved in a chess game
+        Models the systems of logic involved in a chess game
+        Need to initialise board with pieces
     """
+
     def __init__(self):
-        self.isWhiteTurn = True
+        self.isWhitesTurn = True
         self.whitePieces = {}
         self.blackPieces = {}
         self.board = []
@@ -17,10 +22,9 @@ class Chess:
         # check for things like check and checkmate
         # check piece is right colour
         # check it can go to coords2
-            # check the pieces candidate squares
-            # check coords 2 does not have piece of same colour on
+        # check the pieces candidate squares
+        # check coords 2 does not have piece of same colour on
         # update board
         # update piece(s)
-
         pass
 

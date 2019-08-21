@@ -6,6 +6,7 @@ class mImage:
         mImage - moveable image
         wrapper for draggable images (pieces)
     """
+
     def __init__(self, path, pos, size):
         self.path = path
         self.pos = self.x, self.y = pos

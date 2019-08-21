@@ -1,10 +1,12 @@
 import pygame as pg
 from mImage import mImage
 
-"""
-    View class - acts as front end for GUI and presents to app
-"""
+
 class View:
+    """
+        Presents the surface (_display_suf) to be displayed by the App object
+    """
+
     def __init__(self):
         self._running = True
         self.size = self.width, self.height = 800, 800
@@ -45,21 +47,21 @@ class View:
                 self.dragging = image
                 return
         self.dragging = None
-        
+
     # performs a drag operation update
     # recentres image so centre aligns with mouse
     def drag(self, coords):
         assert self.dragging != None
         image = self.dragging.image
-        coords = tuple(map(lambda a , b : a - b/2, coords, self.dragging.size))
+        coords = tuple(map(lambda a, b: a - b / 2, coords, self.dragging.size))
         self.dragging.move(coords)
         self.refresh()
-    
+
     def drop(self, coords):
-        (x,y) = coords
-        x = (x//self.pwidth)*self.pwidth
-        y = (y//self.pheight)*self.pheight
-        self.dragging.move((x,y))
+        (x, y) = coords
+        x = (x // self.pwidth) * self.pwidth
+        y = (y // self.pheight) * self.pheight
+        self.dragging.move((x, y))
         self.dragging.drop()
         self.refresh()
 
@@ -68,8 +70,8 @@ class View:
         self._display_surf.blit(self.background, (0, 0))
         for movingI in self.mImages:
             self._display_surf.blit(movingI.image, movingI.pos)
-        
+
         # Always draw the dragged piece over everything else
         if self.dragging != None:
             self._display_surf.blit(self.dragging.image, self.dragging.pos)
-        
+

@@ -7,6 +7,7 @@ class App:
     """
         App - main application
     """
+
     def __init__(self):
         self._running = True
         self._display_surf = None
@@ -15,8 +16,8 @@ class App:
     def on_init(self):
         pg.init()
         self._display_surf = pg.display.set_mode(self._view.size, pg.HWSURFACE | pg.DOUBLEBUF)
+        self._view.on_init()  # must be called after display.set_mode()
         self._running = True
-        self._view.on_init()
 
     def on_event(self, event):
         if event.type == pg.QUIT:
@@ -36,7 +37,7 @@ class App:
                 coordinates = pg.mouse.get_pos()
                 self._view.drop(coordinates)
                 self._view.dragging = None
-                
+
     def on_loop(self):
         pass
 
@@ -48,9 +49,7 @@ class App:
         pg.quit()
 
     def on_execute(self):
-        if not self.on_init():
-            self._running = False
-
+        self.on_init()
         while self._running:
             for event in pg.event.get():
                 self.on_event(event)
