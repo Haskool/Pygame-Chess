@@ -30,7 +30,8 @@ class Controller:
             toCo = viewCoordsToModelIndex(toCoords, self.view.dragging.size)
             fromCo = viewCoordsToModelIndex(fromCoords, self.view.dragging.size)
             moved = self.model.move(tupleToInt(toCo), tupleToInt(fromCo))
-            if moved:
+            if True:
+                self.view.removeImageAt(toCoords)
                 self.view.drop(toCoords)
             else:
                 self.view.drop(self.view.dragging.pos)

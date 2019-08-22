@@ -43,20 +43,20 @@ class View:
     def setSelectedPiece(self, mousePos):
         image = self.getPieceAt(mousePos)
         if not (image is None):
+            image.isDragged(mousePos)
             self.dragging = image
             return
         self.dragging = None
 
     def getPieceAt(self, mousePos):
         for image in self.mImages:
-            if image.isDragged(mousePos):
+            if image.isClicked(mousePos):
                 return image
 
     # performs a drag operation update
     # recentres image so centre aligns with mouse
     def drag(self, coords):
         assert self.dragging != None
-        image = self.dragging.image
         coords = tuple(map(lambda a, b: a - b / 2, coords, self.dragging.size))
         self.dragging.move(coords)
         self.refresh()
@@ -66,18 +66,25 @@ class View:
         x = (x // self.pwidth) * self.pwidth
         y = (y // self.pheight) * self.pheight
         self.dragging.move((x, y))
+        self.dragging.movePiece((x, y))
         self.dragging.drop()
+        self.dragging = None
         self.refresh()
+
+    def removeImageAt(self, coords):
+        piece = self.getPieceAt(coords)
+        if piece in self.mImages:
+            self.mImages.remove(piece)
 
     # re-blits every image to its last updated position
     def refresh(self):
         self._display_surf.blit(self.background, (0, 0))
         for movingI in self.mImages:
-            self._display_surf.blit(movingI.image, movingI.pos)
+            self._display_surf.blit(movingI.image, movingI.currentPos)
 
         # Always draw the dragged piece over everything else
         if self.dragging != None:
-            self._display_surf.blit(self.dragging.image, self.dragging.pos)
+            self._display_surf.blit(self.dragging.image, self.dragging.currentPos)
 
     def getSurface(self):
         return self._display_surf

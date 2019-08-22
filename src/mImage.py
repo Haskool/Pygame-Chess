@@ -9,21 +9,28 @@ class mImage:
 
     def __init__(self, path, pos, size):
         self.path = path
-        self.pos = self.x, self.y = pos
-        print("image pos is :" + str(pos))
+        self.pos = pos
+        self.currentPos = self.x, self.y = pos
         self.size = self.width, self.height = size
         image = pg.image.load(path).convert_alpha()
         self.image = pg.transform.scale(image, size)
         self.dragged = False
 
+    def isClicked(self, coords):
+        x = coords[0]
+        y = coords[1]
+        ix = self.pos[0]
+        iy = self.pos[1]
+        xInBox = x >= ix and x <= ix + self.width
+        yInBox = y >= iy and y <= iy + self.height
+        return xInBox and yInBox
+
     # checks if clicked and sets dragged field
     def isDragged(self, coords):
         assert self.dragged == False
-        x = coords[0]
-        y = coords[1]
-        xInBox = x >= self.x and x <= self.x + self.width
-        yInBox = y >= self.y and y <= self.y + self.height
-        self.dragged = xInBox and yInBox
+        self.dragged = self.isClicked(coords)
+        if self.dragged:
+            print("STARTED DRAG")
         return self.dragged
 
     # called once user releases mouse click and image was being dragged
@@ -31,9 +38,12 @@ class mImage:
         assert self.dragged == True
         self.dragged = False
 
+    def movePiece(self, newPos):
+        self.pos = newPos
+
     # updates location fields
     def move(self, newPos):
-        self.pos = newPos
+        self.currentPos = newPos
         self.x = newPos[0]
         self.y = newPos[1]
 
