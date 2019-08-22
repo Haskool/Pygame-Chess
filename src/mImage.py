@@ -10,6 +10,7 @@ class mImage:
     def __init__(self, path, pos, size):
         self.path = path
         self.pos = self.x, self.y = pos
+        print("image pos is :" + str(pos))
         self.size = self.width, self.height = size
         image = pg.image.load(path).convert_alpha()
         self.image = pg.transform.scale(image, size)

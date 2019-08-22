@@ -1,6 +1,8 @@
 import numpy as np
 import pieces
-from pieces import Piece, Pawn, Rook, Knight, Bishop, Queen, King
+from pieces import Colour, Piece, Pawn, Rook, Knight, Bishop, Queen, King
+
+
 class Chess:
     """
         Models the systems of logic involved in a chess game
@@ -8,23 +10,37 @@ class Chess:
     """
 
     def __init__(self):
-        self.isWhitesTurn = True
-        self.whitePieces = {}
-        self.blackPieces = {}
+        self.turnColour = Colour.white
         self.board = []
         self.isOver = False
 
     def on_init(self):
-        pass
+        pawnRow = lambda y, c: [Pawn((x, y), c) for x in range(8)]
+        constructPieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+        pieceRow = lambda y, c: [constructPieces[x]((x, y), c) for x in range(8)]
+        emptyRow = [None] * 8
+        for y in range(8):
+            row = emptyRow
+            if y == 0:
+                row = pieceRow(y, Colour.white)
+            elif y == 7:
+                row = pieceRow(y, Colour.black)
+            elif y == 1:
+                row = pawnRow(y, Colour.white)
+            elif y == 6:
+                row = pawnRow(y, Colour.black)
+            self.board.append(row)
 
-    def move(self, coords1, coords2):
-        piece = board[coords1.y][coords1.x]
-        # check for things like check and checkmate
-        # check piece is right colour
-        # check it can go to coords2
-        # check the pieces candidate squares
-        # check coords 2 does not have piece of same colour on
-        # update board
-        # update piece(s)
-        pass
+    def move(self, fromPos, toPos):
+        print("moving: " + str(fromPos) + "to " + str(toPos))
+        fromPiece = self.board[fromPos[1]][fromPos[0]]
+        if fromPiece is None or fromPiece.Colour != self.turnColour:
+            return None
+        candidates = fromPiece.getCanidiateSquares()
+
+        toPiece = self.board[toPos[1]][toPos[0]]
+        if candidates.contains(toPos) and ((toPiece is None) or toPiece.colour != fromPiece.colour):
+            self.board[fromPos[1]][fromPos[0]] = None
+            self.board[toPos[1]][toPos[0]] = fromPiece
+            return True
 

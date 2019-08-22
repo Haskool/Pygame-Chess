@@ -33,7 +33,6 @@ class View:
                         x = i * self.pwidth
                         pI = mImage("resources\\{}{}.png".format(colour, piece), (x, y), self.psize)
                         self.mImages.append(pI)
-
             y = self.pheight if colour == "b" else self.height - 2 * self.pheight
             for x in range(0, self.width, self.pwidth):
                 pI = pI = mImage("resources\\{}p.png".format(colour), (x, y), self.psize)
@@ -74,4 +73,7 @@ class View:
         # Always draw the dragged piece over everything else
         if self.dragging != None:
             self._display_surf.blit(self.dragging.image, self.dragging.pos)
+
+    def getSurface(self):
+        return self._display_surf
 

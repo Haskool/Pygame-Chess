@@ -42,7 +42,9 @@ class Pawn(Piece):
         return self.onBoard(candidates)
 
 
-p = Pawn((0, 0), Colour.white)
+p = Pawn
+p = p((0, 0), Colour.white)
+
 print(p.getCanidiateSquares())
 
 
@@ -97,11 +99,21 @@ print(q.getCanidiateSquares())
 
 
 class King(Piece):
+    def __init__(self, position, colour):
+        super().__init__(position, colour)
+        self.inCheck = False
+
     def getCanidiateSquares(self):
         delta = [-1, 0, 1]
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)
         return self.onBoard(candidates)
+
+    def putInCheck(self):
+        self.inCheck = True
+
+    def outOfCheck(self):
+        self.inCheck = False
 
 
 king = King((3, 3), Colour.white)
