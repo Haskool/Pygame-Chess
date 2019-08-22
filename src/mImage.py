@@ -40,6 +40,7 @@ class mImage:
 
     def movePiece(self, newPos):
         self.pos = newPos
+        assert self.currentPos == self.pos
 
     # updates location fields
     def move(self, newPos):

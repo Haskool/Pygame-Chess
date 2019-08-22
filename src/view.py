@@ -62,6 +62,7 @@ class View:
         self.refresh()
 
     def drop(self, coords):
+        print("dropping to: " + str(coords))
         (x, y) = coords
         x = (x // self.pwidth) * self.pwidth
         y = (y // self.pheight) * self.pheight

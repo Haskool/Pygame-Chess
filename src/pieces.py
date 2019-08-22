@@ -3,8 +3,8 @@ from itertools import cycle, islice, dropwhile, chain, product
 
 
 class Colour(IntEnum):
-    white = 1
-    black = -1
+    white = -1
+    black = 1
 
 
 class Piece:
@@ -28,9 +28,9 @@ class Piece:
 
     # coords = index of square to move to
     def move(self, coords):
-        self.pos = coords
-        self.x = coords.x
-        self.y = coords.y
+        self.position = coords
+        self.x = coords[0]
+        self.y = coords[1]
 
 
 class Pawn(Piece):
@@ -42,9 +42,7 @@ class Pawn(Piece):
         return self.onBoard(candidates)
 
 
-p = Pawn
-p = p((0, 0), Colour.white)
-
+p = Pawn((3, 3), Colour.white)
 print(p.getCanidiateSquares())
 
 
@@ -56,34 +54,27 @@ class Rook(Piece):
         return self.onBoard(candidates)
 
 
-r = Rook((3, 2), Colour.white)
-print(r.getCanidiateSquares())
-
-
 class Knight(Piece):
     def getCanidiateSquares(self):
-        createL = lambda xs, ys: [(self.x + x, self.y + y) for x in xs for y in ys]
-        moves = cycle([[1, -1], [2]])
-        xss = list(islice(moves, 4))
-        yss = list(islice(moves, 1, 5))
-        candidates = list(chain.from_iterable([createL(xs, ys) for (xs, ys) in zip(xss, yss)]))
+        moves = product([1, -1], [2, -2])
+        candidates = list(
+            chain.from_iterable(
+                [[(self.x + x, self.y + y), (self.x + y, self.y + x)] for (x, y) in moves]
+            )
+        )
         return self.onBoard(candidates)
-
-
-k = Knight((3, 2), Colour.white)
-print(k.getCanidiateSquares())
-print(k.getCanidiateSquares()[0:4])
 
 
 class Bishop(Piece):
     def getCanidiateSquares(self):
-        diagonals = [[(self.x + i, self.y + i), (self.x - i, self.y + i)] for i in range(1, 8)]
-        candidates = list(chain.from_iterable(diagonals))
+        delta = [1, -1]
+        diagonals = [
+            (self.x + scale * x, self.y + scale * y)
+            for (x, y) in product(delta, repeat=2)
+            for scale in range(1, 8)
+        ]
+        candidates = diagonals
         return self.onBoard(candidates)
-
-
-b = Bishop((0, 0), Colour.white)
-print(b.getCanidiateSquares())
 
 
 class Queen(Piece):
@@ -92,10 +83,6 @@ class Queen(Piece):
         tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares()
         candidates = tempBishopCandidates + tempRookCandidates
         return self.onBoard(candidates)
-
-
-q = Queen((4, 4), Colour.white)
-print(q.getCanidiateSquares())
 
 
 class King(Piece):
@@ -114,7 +101,3 @@ class King(Piece):
 
     def outOfCheck(self):
         self.inCheck = False
-
-
-king = King((3, 3), Colour.white)
-print(king.getCanidiateSquares())

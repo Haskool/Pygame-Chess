@@ -27,10 +27,14 @@ class Controller:
         if self.view.dragging != None:
             toCoords = pg.mouse.get_pos()
             fromCoords = self.view.dragging.pos
+
+            print("current position of piece is: " + str(fromCoords))
             toCo = viewCoordsToModelIndex(toCoords, self.view.dragging.size)
             fromCo = viewCoordsToModelIndex(fromCoords, self.view.dragging.size)
-            moved = self.model.move(tupleToInt(toCo), tupleToInt(fromCo))
-            if True:
+            print(str(fromCo))
+            print(str(toCo))
+            moved = self.model.move(tupleToInt(fromCo), tupleToInt(toCo))
+            if moved:
                 self.view.removeImageAt(toCoords)
                 self.view.drop(toCoords)
             else:
@@ -43,7 +47,9 @@ class Controller:
 
 
 def viewCoordsToModelIndex(pos, size):
-    return tuple(map(lambda a, b: a / b, pos, size))
+    print("in: " + str(pos))
+    print("size: " + str(size))
+    return tuple(map(lambda a, b: a // b, pos, size))
 
 
 def tupleToInt(t):
