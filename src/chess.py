@@ -34,12 +34,12 @@ class Chess:
     def move(self, fromPos, toPos):
         print("moving: " + str(fromPos) + "to " + str(toPos))
         fromPiece = self.board[fromPos[1]][fromPos[0]]
-        if fromPiece is None or fromPiece.Colour != self.turnColour:
+        if fromPiece is None or fromPiece.colour != self.turnColour:
             return None
         candidates = fromPiece.getCanidiateSquares()
 
         toPiece = self.board[toPos[1]][toPos[0]]
-        if candidates.contains(toPos) and ((toPiece is None) or toPiece.colour != fromPiece.colour):
+        if toPos in candidates and ((toPiece is None) or toPiece.colour != fromPiece.colour):
             self.board[fromPos[1]][fromPos[0]] = None
             self.board[toPos[1]][toPos[0]] = fromPiece
             return True

@@ -41,11 +41,16 @@ class View:
 
     # decides which piece was clicked (if any) and sets the dragging field to it
     def setSelectedPiece(self, mousePos):
+        image = self.getPieceAt(mousePos)
+        if not (image is None):
+            self.dragging = image
+            return
+        self.dragging = None
+
+    def getPieceAt(self, mousePos):
         for image in self.mImages:
             if image.isDragged(mousePos):
-                self.dragging = image
-                return
-        self.dragging = None
+                return image
 
     # performs a drag operation update
     # recentres image so centre aligns with mouse
