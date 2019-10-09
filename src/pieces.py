@@ -52,11 +52,14 @@ class Pawn(Piece):
         return self.onBoard(candidates)
 
     def getPath(self, fromCo, toCo):
+        direction = self.colour
+        path = []
+        if fromCo[0] == toCo[0]:
+            path += [(fromCo[0], fromCo[1] + direction)]
         if toCo[1] == fromCo[1] + 2:
-            return [(fromCo[0], fromCo[1] + 1)]
-        else:
-            return []
-    
+            path += [(fromCo[0], fromCo[1] + 2*direction)]
+        return path 
+
     def move(self, coords):
         super().move(coords)
         self.hasMoved = True

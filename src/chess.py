@@ -36,11 +36,13 @@ class Chess:
         (toX, toY) = toPos
         fromPiece = self.board[fromY][fromX]
         if fromPiece is None or fromPiece.colour != self.turnColour:
-            print(fromPiece)
-            print("None?", fromPiece is None)
             return False
         candidates = fromPiece.getCanidiateSquares()
         toPiece = self.board[toY][toX]
+        print(toPos)
+        print(fromPiece.getPath(fromPos, toPos))
+        print(toPiece == None)
+        print(toPos in fromPiece.getPath(fromPos, toPos))
         moveIsNotBlocked = all(self.board[y][x] == None for (x,y) in fromPiece.getPath(fromPos, toPos))
         isLegal = (toPos in candidates) and moveIsNotBlocked and ((toPiece is None) or toPiece.colour != fromPiece.colour)
         if isLegal:
