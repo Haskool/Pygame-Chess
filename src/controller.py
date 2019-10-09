@@ -5,11 +5,11 @@ from chess import Chess
 
 class Controller:
     def __init__(self):
-        self.model = Chess()
+        self.chess = Chess()
         self.view = View()
 
     def on_init(self):
-        self.model.on_init()
+        self.chess.on_init()
         self.view.on_init()
 
     def select(self):
@@ -24,22 +24,20 @@ class Controller:
             self.view.drag(coordinates)
 
     def drop(self):
+        # drop piece being dragged
         if self.view.dragging != None:
             toCoords = pg.mouse.get_pos()
             fromCoords = self.view.dragging.pos
-
-            print("current position of piece is: " + str(fromCoords))
             toCo = viewCoordsToModelIndex(toCoords, self.view.dragging.size)
             fromCo = viewCoordsToModelIndex(fromCoords, self.view.dragging.size)
-            print(str(fromCo))
-            print(str(toCo))
-            moved = self.model.move(tupleToInt(fromCo), tupleToInt(toCo))
+            moved = self.chess.move(tupleToInt(fromCo), tupleToInt(toCo))
             if moved:
+                print("All good")
                 self.view.removeImageAt(toCoords)
                 self.view.drop(toCoords)
             else:
+                print("Illegal!")
                 self.view.drop(self.view.dragging.pos)
-
             self.view.dragging = None
 
     def getSurface(self):

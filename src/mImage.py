@@ -29,8 +29,6 @@ class mImage:
     def isDragged(self, coords):
         assert self.dragged == False
         self.dragged = self.isClicked(coords)
-        if self.dragged:
-            print("STARTED DRAG")
         return self.dragged
 
     # called once user releases mouse click and image was being dragged

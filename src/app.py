@@ -29,7 +29,7 @@ class App:
             # set a piece to be dragged using dragging field in View
             self._controller.select()
         elif event.type == pg.MOUSEMOTION:
-            # perform a drag operation
+            # update any currently dragged mImages
             self._controller.drag()
         elif event.type == pg.MOUSEBUTTONUP:
             # reset dragging field in View

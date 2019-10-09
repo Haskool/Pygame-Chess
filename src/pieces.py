@@ -21,6 +21,9 @@ class Piece:
     def getCanidiateSquares(self):
         raise NotImplementedError
 
+    def getPath(self, fromCo, toCo):
+        raise NotImplementedError
+
     def onBoard(self, candidates):
         return list(
             filter(lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7, candidates)
@@ -41,6 +44,8 @@ class Pawn(Piece):
         candidates = forward + diagonals
         return self.onBoard(candidates)
 
+    def getPath(self, fromCo, toCo):
+        return []
 
 p = Pawn((3, 3), Colour.white)
 print(p.getCanidiateSquares())
@@ -52,7 +57,24 @@ class Rook(Piece):
         vertical = [(x, self.y) for x in range(1, 8)]
         candidates = horizontal + vertical
         return self.onBoard(candidates)
+    
+    def getPath(self, fromCo, toCo):
+        (fromX, fromY) = fromCo
+        (toX, toY) = toCo
+        assert fromX == toX or fromY == toY 
+        path = []
+        if fromX == toX:
+            if toY > fromY:
+                path = [(fromX, fromY + i) for i in range(1, toY - fromY)]
+            else: 
+                path = [(fromX, fromY - i) for i in range(1, toY - fromY)]
+        else:
+            if toX > fromX:
+                path = [(fromX + i, fromY) for i in range(1, toX - fromX)]
+            else: 
+                path = [(fromX - i, fromY) for i in range(1, toX - fromX)]
 
+        return path
 
 class Knight(Piece):
     def getCanidiateSquares(self):
@@ -63,7 +85,9 @@ class Knight(Piece):
             )
         )
         return self.onBoard(candidates)
-
+    
+    def getPath(self, fromCo, toCo):
+        return []
 
 class Bishop(Piece):
     def getCanidiateSquares(self):
@@ -76,6 +100,24 @@ class Bishop(Piece):
         candidates = diagonals
         return self.onBoard(candidates)
 
+    def getPath(self, fromCo, toCo):
+        (fromX, fromY) = fromCo
+        (toX, toY) = toCo
+        assert abs(fromX - toX) == abs(fromY - toY) 
+        path = []
+        pathLength = abs(fromX - toX)
+        if toX > fromX:
+            if toY > fromY:
+                path = [(fromX + i, fromY + i) for i in range(1, pathLength)]
+            else: 
+                path = [(fromX + i, fromY - i) for i in range(1, pathLength)]
+        else:
+            if toY > fromY:
+                path = [(fromX - i, fromY + i) for i in range(1, pathLength)]
+            else: 
+                path = [(fromX - i, fromY - i) for i in range(1, pathLength)]
+
+        return path
 
 class Queen(Piece):
     def getCanidiateSquares(self):
@@ -83,6 +125,15 @@ class Queen(Piece):
         tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares()
         candidates = tempBishopCandidates + tempRookCandidates
         return self.onBoard(candidates)
+    
+    def getPath(self, fromCo, toCo):
+        bishop = Bishop(self.position, self.colour).getPath(fromCo, toCo)
+        rook = Rook(self.position, self.colour).getPath(fromCo, toCo)
+        try: 
+            return bishop.getPath(fromCo, toCo)
+        except: 
+            return rook.getPath(fromCo, toCo)
+
 
 
 class King(Piece):
@@ -95,7 +146,10 @@ class King(Piece):
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)
         return self.onBoard(candidates)
-
+    
+    def getPath(self, fromCo, toCo):
+        return []
+    
     def putInCheck(self):
         self.inCheck = True
 

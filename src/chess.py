@@ -32,31 +32,28 @@ class Chess:
             self.board.append(row)
 
     def move(self, fromPos, toPos):
-        fromPiece = self.board[fromPos[1]][fromPos[0]]
+        (fromX, fromY) = fromPos
+        (toX, toY) = toPos
+        fromPiece = self.board[fromY][fromX]
+
         if fromPiece is None or fromPiece.colour != self.turnColour:
             return None
+
         candidates = fromPiece.getCanidiateSquares()
-        print(str(candidates))
-        toPiece = self.board[toPos[1]][toPos[0]]
-        # for xs in self.board:
-        #     row = ""
-        #     for x in xs:
-        #         if type(x) == Pawn:
-        #             row += "p"
-        #         else:
-        #             row += "A"
-        #     print(row)
-        if toPos in candidates and ((toPiece is None) or toPiece.colour != fromPiece.colour):
-            self.board[fromPos[1]][fromPos[0]] = None
-            self.board[toPos[1]][toPos[0]] = fromPiece
-            fromPiece.move(toPos)
-            for xs in self.board:
-                row = ""
-                for x in xs:
-                    if type(x) == Pawn:
-                        row += "p"
-                    else:
-                        row += "A"
-                print(row)
-            return True
+        toPiece = self.board[toY][toX]
+
+        moveIsNotBlocked = all(self.board[y][x] == None for (x,y) in fromPiece.getPath(fromPos, toPos))
+
+        isLegalMove = toPos in candidates and moveIsNotBlocked and ((toPiece is None) or toPiece.colour != fromPiece.colour)
+        # Needs to ask the chess logic if a legal move
+        if isLegalMove:
+            self.board[fromY][fromX] = None
+            self.board[toY][toX] = fromPiece
+            fromPiece.move(toPos)     
+            # Invert turn colour
+            self.turnColour *= -1 
+
+        return isLegalMove
+
+
 
