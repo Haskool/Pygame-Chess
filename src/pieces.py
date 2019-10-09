@@ -37,15 +37,29 @@ class Piece:
 
 
 class Pawn(Piece):
+    def __init__(self, position, colour):
+        super().__init__(position, colour)
+        self.hasMoved = False
+    
     def getCanidiateSquares(self):
         direction = self.colour
         forward = [(self.x, self.y + direction)]
+        firstMove = [(self.x, self.y + 2*direction)]
         diagonals = [(self.x + 1, self.y + direction), (self.x - 1, self.y + direction)]
         candidates = forward + diagonals
+        if not self.hasMoved: 
+            candidates += firstMove
         return self.onBoard(candidates)
 
     def getPath(self, fromCo, toCo):
-        return []
+        if toCo[1] == fromCo[1] + 2:
+            return [(fromCo[0], fromCo[1] + 1)]
+        else:
+            return []
+    
+    def move(self, coords):
+        super().move(coords)
+        self.hasMoved = True
 
 p = Pawn((3, 3), Colour.white)
 print(p.getCanidiateSquares())
@@ -127,14 +141,12 @@ class Queen(Piece):
         return self.onBoard(candidates)
     
     def getPath(self, fromCo, toCo):
-        bishop = Bishop(self.position, self.colour).getPath(fromCo, toCo)
-        rook = Rook(self.position, self.colour).getPath(fromCo, toCo)
-        try: 
+        bishop = Bishop(self.position, self.colour)
+        rook = Rook(self.position, self.colour)
+        if fromCo[0] == toCo[0] or fromCo[1] == toCo[1]:
+            return rook.getPath(fromCo, toCo) 
+        else:
             return bishop.getPath(fromCo, toCo)
-        except: 
-            return rook.getPath(fromCo, toCo)
-
-
 
 class King(Piece):
     def __init__(self, position, colour):
