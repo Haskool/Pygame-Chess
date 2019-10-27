@@ -4,7 +4,7 @@ import pygame as pg
 class mImage:
     """
         mImage - moveable image
-        wrapper for draggable images (pieces)
+        wrapper for draggable images (of pieces)
     """
 
     def __init__(self, path, pos, size):
