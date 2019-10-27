@@ -25,6 +25,7 @@ class Controller:
 
     def drop(self):
         # drop piece being dragged
+        # attempt to perform a move on the dragged piece to that square
         if self.view.dragging != None:
             toCoords = pg.mouse.get_pos()
             fromCoords = self.view.dragging.pos
@@ -32,11 +33,9 @@ class Controller:
             fromCo = viewCoordsToModelIndex(fromCoords, self.view.dragging.size)
             moved = self.chess.move(tupleToInt(fromCo), tupleToInt(toCo))
             if moved:
-                print("All good")
                 self.view.removeImageAt(toCoords)
                 self.view.drop(toCoords)
             else:
-                print("Illegal!")
                 self.view.drop(self.view.dragging.pos)
             self.view.dragging = None
 
@@ -48,7 +47,6 @@ def viewCoordsToModelIndex(pos, size):
     print("in: " + str(pos))
     print("size: " + str(size))
     return tuple(map(lambda a, b: a // b, pos, size))
-
 
 def tupleToInt(t):
     return (int(t[0]), int(t[1]))

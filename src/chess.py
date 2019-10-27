@@ -5,8 +5,7 @@ from pieces import Colour, Piece, Pawn, Rook, Knight, Bishop, Queen, King
 
 class Chess:
     """
-        Models the systems of logic involved in a chess game
-        Need to initialise board with pieces
+        Chess - Models the systems of logic involved in a chess game
     """
 
     def __init__(self):
@@ -32,6 +31,10 @@ class Chess:
             self.board.append(row)
 
     def move(self, fromPos, toPos):
+        """
+            Tries to move a piece from square with coordinates fromPos to square toPos
+            Returns True if a legal move occured and False otherwise
+        """
         (fromX, fromY) = fromPos
         (toX, toY) = toPos
         fromPiece = self.board[fromY][fromX]
@@ -39,16 +42,11 @@ class Chess:
             return False
         candidates = fromPiece.getCanidiateSquares()
         toPiece = self.board[toY][toX]
-        print(toPos)
-        print(fromPiece.getPath(fromPos, toPos))
-        print(toPiece == None)
-        print(toPos in fromPiece.getPath(fromPos, toPos))
         moveIsNotBlocked = all(self.board[y][x] == None for (x,y) in fromPiece.getPath(fromPos, toPos))
         isLegal = (toPos in candidates) and moveIsNotBlocked and ((toPiece is None) or toPiece.colour != fromPiece.colour)
         if isLegal:
             self.board[fromY][fromX] = None
             self.board[toY][toX] = fromPiece
             fromPiece.move(toPos)
-            # Invert turn colour
             self.turnColour *= -1 
         return isLegal

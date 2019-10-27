@@ -6,7 +6,7 @@ from controller import Controller
 
 class App:
     """
-        App - main application
+        App - main application class
     """
 
     def __init__(self):
