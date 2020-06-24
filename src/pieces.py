@@ -151,7 +151,7 @@ class Bishop(Piece):
         (toX, toY) = toCo
         assert abs(fromX - toX) == abs(fromY - toY) 
         path = []
-        pathLength = abs(fromX - toX)+1
+        pathLength = abs(fromX - toX)
         if toX > fromX:
             if toY > fromY:
                 path = [(fromX + i, fromY + i) for i in range(1, pathLength)]
@@ -173,7 +173,7 @@ class Queen(Piece):
         legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
         legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
         return legalAndNotBlocked
-        
+
     def getPath(self, fromCo, toCo):
         bishop = Bishop(self.position, self.colour)
         rook = Rook(self.position, self.colour)

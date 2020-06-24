@@ -39,7 +39,7 @@ class Chess:
         (fromX, fromY) = fromPos
         (toX, toY) = toPos
         fromPiece = self.board[fromY][fromX]
-        if fromPiece is None:
+        if fromPiece is None or (fromPiece.colour != self.turnColour):
             return False
         
         candidates = fromPiece.getCanidiateSquares(self.board)
