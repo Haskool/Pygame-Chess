@@ -25,6 +25,7 @@ class Piece:
 
     def getBoard(self, candidate, board):        
         inGrid = lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7
+        print(candidate)
         assert(inGrid(candidate))
         return board[candidate[1]][candidate[0]]
 
@@ -35,8 +36,9 @@ class Piece:
         else:
             return False
     
-    def isFilled(self, candidate, board):
-        return (not self.isFree(candidate, board))
+    def canCapture(self, candidate, board):
+        inGrid = lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7
+        return (inGrid(candidate) and self.getBoard(candidate,board) != None and self.getBoard(candidate,board).colour != self.colour)
 
     # coords = index of square to move to
     def move(self, coords):
@@ -63,9 +65,9 @@ class Pawn(Piece):
         if(self.isFree(forward, board)):
             #TODO promote pawn
             candidates.append(forward)
-        if(self.isFilled(leftDiag, board) and getBoard(leftDiag).colour != self.colour):
+        if(self.canCapture(leftDiag, board)):
             candidates.append(leftDiag)
-        if(self.isFilled(rightDiag, board) and getBoard(rightDiag).colour != self.colour):
+        if(self.canCapture(rightDiag, board)):
             candidates.append(rightDiag)
         if not self.hasMoved: 
             candidates.append(firstMove)
@@ -95,7 +97,9 @@ class Rook(Piece):
         horizontal = [(self.x, y) for y in range(1, 8)]
         vertical = [(x, self.y) for x in range(1, 8)]
         candidates = horizontal + vertical
-        return self.onBoard(candidates)
+        legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
+        legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
+        return legalAndNotBlocked
     
     def getPath(self, fromCo, toCo):
         (fromX, fromY) = fromCo
@@ -123,7 +127,8 @@ class Knight(Piece):
                 [[(self.x + x, self.y + y), (self.x + y, self.y + x)] for (x, y) in moves]
             )
         )
-        return self.onBoard(candidates)
+        legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
+        return legalMoves
     
     def getPath(self, fromCo, toCo):
         return []
@@ -137,14 +142,16 @@ class Bishop(Piece):
             for scale in range(1, 8)
         ]
         candidates = diagonals
-        return self.onBoard(candidates)
+        legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
+        legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
+        return legalAndNotBlocked
 
     def getPath(self, fromCo, toCo):
         (fromX, fromY) = fromCo
         (toX, toY) = toCo
         assert abs(fromX - toX) == abs(fromY - toY) 
         path = []
-        pathLength = abs(fromX - toX)
+        pathLength = abs(fromX - toX)+1
         if toX > fromX:
             if toY > fromY:
                 path = [(fromX + i, fromY + i) for i in range(1, pathLength)]
@@ -163,8 +170,10 @@ class Queen(Piece):
         tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares()
         tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares()
         candidates = tempBishopCandidates + tempRookCandidates
-        return self.onBoard(candidates)
-    
+        legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
+        legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
+        return legalAndNotBlocked
+        
     def getPath(self, fromCo, toCo):
         bishop = Bishop(self.position, self.colour)
         rook = Rook(self.position, self.colour)
@@ -182,7 +191,8 @@ class King(Piece):
         delta = [-1, 0, 1]
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)
-        return self.onBoard(candidates)
+        legalMoves = filter(lambda candidate:self.isFree(candidate,board) or self.canCapture(candidate,board), candidates)        
+        return legalMoves
     
     def getPath(self, fromCo, toCo):
         return []
