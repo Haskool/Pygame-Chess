@@ -31,22 +31,28 @@ class Chess:
             self.board.append(row)
 
     def move(self, fromPos, toPos):
-        """
-            Tries to move a piece from square with coordinates fromPos to square toPos
-            Returns True if a legal move occured and False otherwise
-        """
+        # Tries to move a piece from square with coordinates fromPos to square toPos
+        # Returns True if a legal move occured and False otherwise
+
+        # TODO: handle en passaunt
+
         (fromX, fromY) = fromPos
         (toX, toY) = toPos
         fromPiece = self.board[fromY][fromX]
-        if fromPiece is None or fromPiece.colour != self.turnColour:
+        if fromPiece is None:
             return False
-        candidates = fromPiece.getCanidiateSquares()
-        toPiece = self.board[toY][toX]
-        moveIsNotBlocked = all(self.board[y][x] == None for (x,y) in fromPiece.getPath(fromPos, toPos))
-        isLegal = (toPos in candidates) and moveIsNotBlocked and ((toPiece is None) or toPiece.colour != fromPiece.colour)
+        
+        candidates = fromPiece.getCanidiateSquares(self.board)
+        isLegal = toPos in candidates
+
         if isLegal:
             self.board[fromY][fromX] = None
             self.board[toY][toX] = fromPiece
             fromPiece.move(toPos)
             self.turnColour *= -1 
+
+        # toPiece = self.board[toY][toX]
+        # moveIsNotBlocked = all(self.board[y][x] == None for (x,y) in fromPiece.getPath(fromPos, toPos))
+        
+        # isLegal = (toPos in candidates) and moveIsNotBlocked and ((toPiece is None) or toPiece.colour != fromPiece.colour)
         return isLegal

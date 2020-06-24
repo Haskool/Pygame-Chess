@@ -6,7 +6,6 @@ class Colour(IntEnum):
     white = -1
     black = 1
 
-
 class Piece:
     """
         Abstract class that outlines the common methods and fields
@@ -18,16 +17,26 @@ class Piece:
         self.colour = colour
 
     # returns a list of (x,y) such that the piece could move to those squares
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         raise NotImplementedError
 
     def getPath(self, fromCo, toCo):
         raise NotImplementedError
 
-    def onBoard(self, candidates):
-        return list(
-            filter(lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7, candidates)
-        )
+    def getBoard(self, candidate, board):        
+        inGrid = lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7
+        assert(inGrid(candidate))
+        return board[candidate[1]][candidate[0]]
+
+    def isFree(self, candidate, board):
+        inGrid = lambda xy: xy[0] >= 0 and xy[1] >= 0 and xy[0] <= 7 and xy[1] <= 7
+        if(inGrid(candidate)):
+            return board[candidate[1]][candidate[0]] is None
+        else:
+            return False
+    
+    def isFilled(self, candidate, board):
+        return (not self.isFree(candidate, board))
 
     # coords = index of square to move to
     def move(self, coords):
@@ -41,15 +50,28 @@ class Pawn(Piece):
         super().__init__(position, colour)
         self.hasMoved = False
     
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         direction = self.colour
-        forward = [(self.x, self.y + direction)]
-        firstMove = [(self.x, self.y + 2*direction)]
-        diagonals = [(self.x + 1, self.y + direction), (self.x - 1, self.y + direction)]
-        candidates = forward + diagonals
+        candidates = []
+
+        forward = (self.x, self.y + direction)
+        firstMove = (self.x, self.y + 2*direction)
+        [leftDiag,rightDiag] = [(self.x - 1, self.y + direction), (self.x + 1, self.y + direction)]
+
+        getBoard = lambda t: board[t[1]][t[0]]
+        
+        if(self.isFree(forward, board)):
+            #TODO promote pawn
+            candidates.append(forward)
+        if(self.isFilled(leftDiag, board) and getBoard(leftDiag).colour != self.colour):
+            candidates.append(leftDiag)
+        if(self.isFilled(rightDiag, board) and getBoard(rightDiag).colour != self.colour):
+            candidates.append(rightDiag)
         if not self.hasMoved: 
-            candidates += firstMove
-        return self.onBoard(candidates)
+            candidates.append(firstMove)
+        print(candidates)
+
+        return candidates
 
     def getPath(self, fromCo, toCo):
         direction = self.colour
@@ -64,12 +86,12 @@ class Pawn(Piece):
         super().move(coords)
         self.hasMoved = True
 
-p = Pawn((3, 3), Colour.white)
-print(p.getCanidiateSquares())
+# p = Pawn((3, 3), Colour.white)
+# print(p.getCanidiateSquares())
 
 
 class Rook(Piece):
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         horizontal = [(self.x, y) for y in range(1, 8)]
         vertical = [(x, self.y) for x in range(1, 8)]
         candidates = horizontal + vertical
@@ -94,7 +116,7 @@ class Rook(Piece):
         return path
 
 class Knight(Piece):
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         moves = product([1, -1], [2, -2])
         candidates = list(
             chain.from_iterable(
@@ -107,7 +129,7 @@ class Knight(Piece):
         return []
 
 class Bishop(Piece):
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         delta = [1, -1]
         diagonals = [
             (self.x + scale * x, self.y + scale * y)
@@ -137,7 +159,7 @@ class Bishop(Piece):
         return path
 
 class Queen(Piece):
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares()
         tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares()
         candidates = tempBishopCandidates + tempRookCandidates
@@ -156,7 +178,7 @@ class King(Piece):
         super().__init__(position, colour)
         self.inCheck = False
 
-    def getCanidiateSquares(self):
+    def getCanidiateSquares(self, board):
         delta = [-1, 0, 1]
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)

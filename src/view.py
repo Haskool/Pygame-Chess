@@ -9,8 +9,8 @@ class View:
 
     def __init__(self):
         self._running = True
-        self.size = self.width, self.height = 800, 800
-        self.psize = self.pwidth, self.pheight = 100, 100
+        self.size = self.width, self.height = 1600, 1600
+        self.psize = self.pwidth, self.pheight = 200, 200
         self._display_surf = pg.Surface(self.size)
         self.background = None
         self.mImages = []
@@ -18,7 +18,7 @@ class View:
 
     # construct all board images (mImages) and define their initial locations
     def on_init(self):
-        board = pg.image.load("resources\\board.jpg").convert()
+        board = pg.image.load("resources/board.jpg").convert()
         board = pg.transform.scale(board, self.size)
         self.background = board
 
@@ -31,11 +31,11 @@ class View:
                 for i, pieceName in enumerate(row):
                     if pieceName == piece:
                         x = i * self.pwidth
-                        pI = mImage("resources\\{}{}.png".format(colour, piece), (x, y), self.psize)
+                        pI = mImage("resources/{}{}.png".format(colour, piece), (x, y), self.psize)
                         self.mImages.append(pI)
             y = self.pheight if colour == "b" else self.height - 2 * self.pheight
             for x in range(0, self.width, self.pwidth):
-                pI = pI = mImage("resources\\{}p.png".format(colour), (x, y), self.psize)
+                pI = pI = mImage("resources/{}p.png".format(colour), (x, y), self.psize)
                 self.mImages.append(pI)
         self.refresh()
 
