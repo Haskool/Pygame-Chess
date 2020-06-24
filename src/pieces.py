@@ -75,6 +75,11 @@ class Pawn(Piece):
 
         return candidates
 
+
+    def getAttackingSquares(self):
+        direction = self.colour
+        return [(self.x - 1, self.y + direction), (self.x + 1, self.y + direction)]
+
     def getPath(self, fromCo, toCo):
         direction = self.colour
         path = []
@@ -94,11 +99,11 @@ class Pawn(Piece):
 
 class Rook(Piece):
     def getCanidiateSquares(self, board):
-        horizontal = [(self.x, y) for y in range(1, 8)]
-        vertical = [(x, self.y) for x in range(1, 8)]
+        horizontal = [(self.x, y) for y in range(1, 9)]
+        vertical = [(x, self.y) for x in range(1, 9)]
         candidates = horizontal + vertical
         legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
-        legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
+        legalAndNotBlocked = list(filter(lambda toPos: all(self.isFree(candidate, board) for candidate in self.getPath(self.position, toPos)), legalMoves))
         return legalAndNotBlocked
     
     def getPath(self, fromCo, toCo):
@@ -110,12 +115,12 @@ class Rook(Piece):
             if toY > fromY:
                 path = [(fromX, fromY + i) for i in range(1, toY - fromY)]
             else: 
-                path = [(fromX, fromY - i) for i in range(1, toY - fromY)]
+                path = [(fromX, fromY - i) for i in range(1, fromY - toY)]
         else:
             if toX > fromX:
                 path = [(fromX + i, fromY) for i in range(1, toX - fromX)]
             else: 
-                path = [(fromX - i, fromY) for i in range(1, toX - fromX)]
+                path = [(fromX - i, fromY) for i in range(1, fromX - toX)]
 
         return path
 
@@ -167,12 +172,11 @@ class Bishop(Piece):
 
 class Queen(Piece):
     def getCanidiateSquares(self, board):
-        tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares()
-        tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares()
+        tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares(board)
+        tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares(board)
         candidates = tempBishopCandidates + tempRookCandidates
-        legalMoves = list(filter(lambda candidate: self.isFree(candidate,board) or self.canCapture(candidate,board), candidates))
-        legalAndNotBlocked = list(filter(lambda toPos: all(board[y][x] == None for (x,y) in self.getPath(self.position, toPos)), legalMoves))
-        return legalAndNotBlocked
+        print(candidates)
+        return candidates
 
     def getPath(self, fromCo, toCo):
         bishop = Bishop(self.position, self.colour)
@@ -191,9 +195,28 @@ class King(Piece):
         delta = [-1, 0, 1]
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)
-        legalMoves = filter(lambda candidate:self.isFree(candidate,board) or self.canCapture(candidate,board), candidates)        
-        return legalMoves
-    
+        legalMoves = set(filter(lambda candidate:self.isFree(candidate,board) or self.canCapture(candidate,board), candidates)) 
+
+        allAttackedSquares = set()
+        for row in board:
+            for piece in row:
+                if piece != None and piece.colour != self.colour:
+                    if isinstance(piece, King) or isinstance(piece, Pawn):
+                        allAttackedSquares.update(piece.getAttackingSquares())
+                    else:
+                        allAttackedSquares.update(piece.getCanidiateSquares(board))
+
+        
+        legalAndNotAttacked = list(filter(lambda candidate: not (candidate in allAttackedSquares), legalMoves))
+
+        return legalAndNotAttacked
+
+    def getAttackingSquares(self):
+        delta = [-1, 0, 1]
+        candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
+        candidates.remove(self.position)
+        return candidates
+
     def getPath(self, fromCo, toCo):
         return []
     
