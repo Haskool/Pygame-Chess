@@ -17,7 +17,7 @@ class Piece:
         self.colour = colour
 
     # returns a list of (x,y) such that the piece could move to those squares
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
         raise NotImplementedError
 
     def getPath(self, fromCo, toCo):
@@ -52,7 +52,7 @@ class Pawn(Piece):
         super().__init__(position, colour)
         self.hasMoved = False
     
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
         direction = self.colour
         candidates = []
 
@@ -98,7 +98,7 @@ class Pawn(Piece):
 
 
 class Rook(Piece):
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
         horizontal = [(self.x, y) for y in range(1, 9)]
         vertical = [(x, self.y) for x in range(1, 9)]
         candidates = horizontal + vertical
@@ -125,7 +125,7 @@ class Rook(Piece):
         return path
 
 class Knight(Piece):
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
         moves = product([1, -1], [2, -2])
         candidates = list(
             chain.from_iterable(
@@ -139,7 +139,7 @@ class Knight(Piece):
         return []
 
 class Bishop(Piece):
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
         delta = [1, -1]
         diagonals = [
             (self.x + scale * x, self.y + scale * y)
@@ -171,9 +171,9 @@ class Bishop(Piece):
         return path
 
 class Queen(Piece):
-    def getCanidiateSquares(self, board):
-        tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares(board)
-        tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares(board)
+    def getCanidiateSquares(self, board, in_check):
+        tempBishopCandidates = Bishop(self.position, self.colour).getCanidiateSquares(board, in_check)
+        tempRookCandidates = Rook(self.position, self.colour).getCanidiateSquares(board, in_check)
         candidates = tempBishopCandidates + tempRookCandidates
         print(candidates)
         return candidates
@@ -191,7 +191,8 @@ class King(Piece):
         super().__init__(position, colour)
         self.inCheck = False
 
-    def getCanidiateSquares(self, board):
+    def getCanidiateSquares(self, board, in_check):
+        # TODO king needs to pnly be able to capture unprotected pieces
         delta = [-1, 0, 1]
         candidates = [(self.x + x, self.y + y) for (x, y) in product(delta, repeat=2)]
         candidates.remove(self.position)
@@ -204,7 +205,7 @@ class King(Piece):
                     if isinstance(piece, King) or isinstance(piece, Pawn):
                         allAttackedSquares.update(piece.getAttackingSquares())
                     else:
-                        allAttackedSquares.update(piece.getCanidiateSquares(board))
+                        allAttackedSquares.update(piece.getCanidiateSquares(board, in_check))
 
         
         legalAndNotAttacked = list(filter(lambda candidate: not (candidate in allAttackedSquares), legalMoves))
